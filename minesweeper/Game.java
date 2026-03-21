@@ -114,7 +114,7 @@ public class Game {
     }
 
     if (this.actionBoard.getCell(x, y) == 1) {
-      System.out.println("can't put a flag on a swept cell");
+      System.out.println("can't put a flag on a swept cell"); // TODO fix printout with error messages
     }
 
     else if (this.actionBoard.getCell(x, y) == 2) {
@@ -137,7 +137,7 @@ public class Game {
   }
 
   private void actionUnsure(int x, int y) {
-    this.actionBoard.setCell(x, y, 3);
+    this.actionBoard.setCell(x, y, 3); // TODO check if this is valid
   }
 
   public void doAction(int x, int y, int action) {
@@ -157,6 +157,42 @@ public class Game {
       default:
         System.out.println("Invalid action");
         break;
+    }
+  }
+
+  public void printBoard() {
+    for (int j = -1, i = -1; j < this.getMainBoard().getHeight(); ++j) {
+      for (i = -1; i < this.getMainBoard().getWidth(); ++i) {
+
+        // indices
+        if (j == -1) {
+          System.out.print((i == -1 ? "  " : String.format("%-2d", i)));
+          continue;
+        } else if (i == -1) {
+          System.out.print(String.format("%-2d", j));
+          continue;
+        }
+
+        switch (this.getActionBoard().getCell(i, j)) {
+          case 1:
+            int cell = this.getAdjacencyBoard().getCell(i, j);
+            System.out.print((cell == 0 ? " " : cell) + " ");
+            break;
+
+          case 2:
+            System.out.print("F ");
+            break;
+
+          case 3:
+            System.out.print("? ");
+            break;
+
+          default:
+            System.out.print("# ");
+
+        }
+      }
+      System.out.print("\n");
     }
   }
 }

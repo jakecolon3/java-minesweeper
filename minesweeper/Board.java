@@ -21,16 +21,13 @@ public class Board {
   }
 
   public void printBoard() {
-    int height = this.boardMatrix.length;
-    int width = this.boardMatrix[0].length;
-
-    System.out.println("Board:");
-    for (int i = 0; i < height; ++i) {
-      for (int j = 0; j < width; ++j) {
+    for (int i = 0; i < this.boardHeight; ++i) {
+      for (int j = 0; j < this.boardWidth; ++j) {
         System.out.print(this.boardMatrix[i][j] + " ");
       }
       System.out.print("\n");
     }
+
   }
 
   public int getHeight() {

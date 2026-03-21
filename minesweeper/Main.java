@@ -1,10 +1,17 @@
 public class Main {
+
   private static int[] parseInts(String[] arguments) {
     int[] parsedArgs = new int[arguments.length];
     for (int i = 0; i < arguments.length; ++i) {
       parsedArgs[i] = Integer.parseInt(arguments[i].trim());
     }
     return parsedArgs;
+  }
+
+  // sets the terminal cursor to the top left of the board
+  // this makes it draw over the old board instead of printing a new board every time
+  public static void resetTerminalCursor(int lines) {
+    System.out.printf("\033[%dF", lines + 1);
   }
 
   public static Game createGameObject(int[] params) {
@@ -24,9 +31,10 @@ public class Main {
     int[] parsedArgs = parseInts(args);
     Game game = createGameObject(parsedArgs);
 
-    game.getActionBoard().printBoard();
+    System.out.println("input action in the format <x, y, (1-3)>:");
+    System.out.println("Board:");
+    game.printBoard();
     while (game.getGameState() == 0) {
-      System.out.println("input action in the format <x, y, (1-3)>:");
 
       String input = System.console().readLine();
       String[] inputAction = input.split(",");
@@ -34,7 +42,12 @@ public class Main {
       int x = parsedAction[0], y = parsedAction[1], a = parsedAction[2];
 
       game.doAction(x, y, a);
-      game.getActionBoard().printBoard();
+      resetTerminalCursor(game.getMainBoard().getHeight() + 1); // +1 cause of printing indices
+      game.printBoard();
+
+      resetTerminalCursor(0);
+      System.out.println("\n            "); // clears the text that remains after input
+      resetTerminalCursor(0);
     }
     // System.out.println("type:");
     // String input = System.console().readLine();
