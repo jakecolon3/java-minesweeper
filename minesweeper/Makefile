@@ -2,10 +2,13 @@ build = build/minesweeper
 src = src/main/java/minesweeper
 cp = CLASSPATH=./build
 javac = $(cp) javac -d ./build
+srcs = $(shell find . -name '*.java')
 
 .PHONY: all run clean winexample gridtest
 
-all : $(build)/Main.class build/AWTExample.class
+# MAKEFLAGS := --jobs
+
+all : $(build)/Main.class
 
 run : $(build)/Main.class
 	$(cp) java minesweeper.Main 1
