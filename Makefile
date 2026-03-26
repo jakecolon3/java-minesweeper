@@ -1,5 +1,5 @@
 build = build/minesweeper
-src = src/main/java/minesweeper
+src = src/minesweeper
 cp = CLASSPATH=./build
 javac = $(cp) javac -d ./build
 srcs = $(shell find . -name '*.java')

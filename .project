@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-    <name>minesweeper</name>
-    <comment>java minesweeper</comment>
-    <!-- <projects> -->
-    <!--     <project>org.seasons.sdt</project> -->
-    <!--     <project>CoolStuff</project> -->
-    <!-- </projects> -->
-    <!-- <buildSpec> -->
-    <!--     <buildCommand> -->
-    <!--         <name>org.seasons.sdt.seasonBuilder</name> -->
-    <!--         <arguments> -->
-    <!--             <dictionary> -->
-    <!--                 <key>climate</key> -->
-    <!--                 <value>cold</value> -->
-    <!--             </dictionary> -->
-    <!--         </arguments> -->
-    <!--     </buildCommand> -->
-    <!-- </buildSpec> -->
-    <!-- <natures> -->
-    <!--     <nature>org.seasons.sdt.seasonNature</nature> -->
-    <!-- </natures> -->
+	<name>minesweeper</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<filteredResources>
+		<filter>
+			<id>1774545948424</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.core.resources.regexFilterMatcher</id>
+				<arguments>node_modules|\.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>
