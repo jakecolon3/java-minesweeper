@@ -2,7 +2,6 @@ package minesweeper.gui;
 
 import minesweeper.game.*;
 
-import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -41,38 +40,95 @@ public class GameGUI extends Frame {
         public void windowDeactivated(WindowEvent e) { }
     }
 
+    // button callback
     private class GridListener implements ActionListener {
 
-        @Override
-        public void actionPerformed(ActionEvent event) {
+        private void removeButton(Component btn, int[] btnCoords) {
+            int x, y;
+            x = btnCoords[0];
+            y = btnCoords[1];
+
+            remove(btn);
+            add(new Label(g.getAdjacencyBoard().getCell(x, y) + "", Label.CENTER),
+                g.getWidth() * y + x); // index for the label
+        }
+
+        private static void setComponentLabel(Button cmp, String label) {
+            cmp.setLabel(label);
+        }
+
+
+        public void doFlag(ActionEvent event) {
 
             String[] actCmd = event.getActionCommand().split(", ");
 
             int x = Integer.parseInt(actCmd[0]);
             int y = Integer.parseInt(actCmd[1]);
 
-            // TODO: implement flagging
-            g.doAction(x, y, 1);
-            g.printBoard();
+            g.doAction(x, y, 2);
 
-            System.out.println(event.getActionCommand());
+            if (g.getActionBoard().getCell(x, y) != 2) {
 
-            for (Button btn : btns) { // can probably use Frame.getComponents() instead
-                if (btn.getName() == event.getActionCommand()) { // finds the button that triggered the event
-                    // btn.setVisible(false);
-                    // btn.setLabel(g.getAdjacencyBoard().getCell(x, y) + "");
-                    // btn.removeActionListener(this);
+            }
 
-                    // remove clicked button and replace it with a label
-                        // we can find the index for the label from the button's coordinates since
-                        // the buttons are added sequentially
-                    remove(btn);
-                    add(new Label(g.getAdjacencyBoard().getCell(x, y) + ""),
-                        g.getWidth() * y + x);
-                    validate();
-                    break;
+            for (Component cmp : getComponents()) { // finds the button that fired the event
+
+                if (cmp instanceof Label) continue;
+
+                if (cmp.getName() == event.getActionCommand()) {
+                    setComponentLabel((Button) cmp, (g.getActionBoard().getCell(x, y) == 2 ? "f" : ""));
                 }
             }
+            validate();
+        }
+
+
+        public void doSweep(ActionEvent event) {
+
+            String[] actCmd = event.getActionCommand().split(", ");
+
+            int x = Integer.parseInt(actCmd[0]);
+            int y = Integer.parseInt(actCmd[1]);
+
+            g.doAction(x, y, 1);
+
+            // g.printBoard();
+            // System.out.println(event.getActionCommand());
+
+            for (Component cmp : getComponents()) {
+
+                if (cmp instanceof Label) continue;
+
+                String[] cmpName = cmp.getName().split(", ");
+                int[] cmpCoords = {Integer.parseInt(cmpName[0]),
+                                   Integer.parseInt(cmpName[1])};
+
+                if (g.getActionBoard().getCell(cmpCoords[0], cmpCoords[1]) == 1) {
+                    removeButton(cmp, cmpCoords);
+                }
+            }
+
+            validate();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+
+            switch (event.getModifiers()) {
+                case 16:
+                    doSweep(event);
+                    break;
+
+                case 17:
+                    doFlag(event);
+                    break;
+
+                default:
+                    doFlag(event);
+                    break;
+            }
+
+            if (g.getGameState() < 0) System.exit(0); // TODO: win/lose screen
         }
     }
 
