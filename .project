@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+    <name>minesweeper</name>
+    <comment>java minesweeper</comment>
+    <!-- <projects> -->
+    <!--     <project>org.seasons.sdt</project> -->
+    <!--     <project>CoolStuff</project> -->
+    <!-- </projects> -->
+    <!-- <buildSpec> -->
+    <!--     <buildCommand> -->
+    <!--         <name>org.seasons.sdt.seasonBuilder</name> -->
+    <!--         <arguments> -->
+    <!--             <dictionary> -->
+    <!--                 <key>climate</key> -->
+    <!--                 <value>cold</value> -->
+    <!--             </dictionary> -->
+    <!--         </arguments> -->
+    <!--     </buildCommand> -->
+    <!-- </buildSpec> -->
+    <!-- <natures> -->
+    <!--     <nature>org.seasons.sdt.seasonNature</nature> -->
+    <!-- </natures> -->
+</projectDescription>
