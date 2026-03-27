@@ -128,7 +128,7 @@ public class GameGUI extends Frame {
                     break;
             }
 
-            if (g.getGameState() < 0) System.exit(0); // TODO: win/lose screen
+            if (g.getGameState() != 0) System.exit(0); // TODO: win/lose screen
         }
     }
 

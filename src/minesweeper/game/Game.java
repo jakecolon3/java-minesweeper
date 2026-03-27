@@ -4,6 +4,7 @@ public class Game {
 
   private Board mainBoard, adjacencyBoard, actionBoard;
   private int mines, gameState, flags, defused, width, height;
+  final private boolean DEBUG = false;
 
   public Game(int width, int height, int mines) {
     this.gameInit(width, height, mines);
@@ -29,7 +30,7 @@ public class Game {
 
     this.actionBoard = new Board(height, width, mines);
 
-    this.mines = mines;
+    this.mines = (DEBUG ? 4 : mines);
     this.flags = mines;
     this.gameState = 0;
     this.defused = 0;
@@ -91,6 +92,7 @@ public class Game {
     return this.defused;
   }
 
+  // TODO: make actions return something to indicate success/fail
   private void actionSweep(int x, int y) {
     this.actionBoard.setCell(x, y, 1);
 
@@ -123,32 +125,39 @@ public class Game {
   }
 
   private void actionFlag(int x, int y) {
-    if (this.flags <= 0) {
-      System.out.println("out of flags! you misplaced one or more");
-      return;
-    }
+    int actCell  = this.actionBoard.getCell(x, y);
+    int mainCell = this.mainBoard  .getCell(x, y);
 
-    if (this.actionBoard.getCell(x, y) == 1) {
+
+    if (actCell == 1) {
       System.out.println("can't put a flag on a swept cell"); // TODO: fix printout with error messages
-    }
 
-    else if (this.actionBoard.getCell(x, y) == 2) {
+    } else if (actCell == 2) {
       this.actionBoard.setCell(x, y, 0);
+      if (mainCell == 1) this.defused--;
       this.flags++;
 
-    } else if (this.mainBoard.getCell(x, y) == 1) {
+    } else if (mainCell == 1) {
       this.actionBoard.setCell(x, y, 2);
       this.defused++;
       this.flags--;
 
-      if (this.defused == this.mines) {
-        this.gameState = 1;
-      }
+
+    } else if (this.flags <= 0) {
+      System.out.println("out of flags! you misplaced one or more");
 
     } else {
       this.actionBoard.setCell(x, y, 2);
       this.flags--;
     }
+
+    if (this.defused == this.mines) {
+      System.out.println("win");
+      this.gameState = 1;
+    }
+
+    System.out.println(this.defused);
+    System.out.println(this.flags);
   }
 
   private void actionUnsure(int x, int y) {
