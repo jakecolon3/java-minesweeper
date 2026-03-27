@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 
+// TODO: flag toggle switch
 // TODO: menu around main frame
 public class GameJGUI extends JFrame {
 
@@ -22,7 +23,7 @@ public class GameJGUI extends JFrame {
             y = btn.getAccessibleContext().getAccessibleIndexInParent() / g.getHeight();
 
             pane.remove(btn);
-            add(new JLabel(g.getAdjacencyBoard().getCell(x, y) + "", JLabel.CENTER),
+            pane.add(new JLabel(g.getAdjacencyBoard().getCell(x, y) + "", JLabel.CENTER),
                 g.getWidth() * y + x); // index for the label
         }
 
@@ -35,6 +36,8 @@ public class GameJGUI extends JFrame {
         }
 
 
+        // TODO: stop sweeping flagged cells
+        // TODO: right click to flag
         public void doLabelAction(ActionEvent event, int action) {
 
             int[] actCoords = parseCoords(event);
@@ -45,7 +48,7 @@ public class GameJGUI extends JFrame {
 
             String newButtonLabel = (action == 2 ? "f" : "?");
 
-            g.doAction(x, y, action);
+            g.doAction(x, y, action); // HACK: should get a return value and stop if sweep fails
             newButtonLabel = (g.getActionBoard().getCell(x, y) == action ? newButtonLabel : "");
 
             JButton btn = (JButton) pane.getAccessibleContext().getAccessibleChild(index);
