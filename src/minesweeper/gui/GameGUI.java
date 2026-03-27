@@ -70,13 +70,13 @@ public class GameGUI extends Frame {
             int y = actCoords[1];
             int index = y * g.getHeight() + x;
 
-            String newLabel = (action == 2 ? "f" : "?");
+            String newButtonLabel = (action == 2 ? "f" : "?");
 
             g.doAction(x, y, action);
-            newLabel = (g.getActionBoard().getCell(x, y) == action ? newLabel : "");
+            newButtonLabel = (g.getActionBoard().getCell(x, y) == action ? newButtonLabel : "");
 
             Button btn = (Button) getAccessibleContext().getAccessibleChild(index);
-            btn.setLabel(newLabel);
+            btn.setLabel(newButtonLabel);
 
             validate();
         }
