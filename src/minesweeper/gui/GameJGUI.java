@@ -64,6 +64,7 @@ public class GameJGUI extends JFrame {
         // TODO: maybe refactor this into a recursive function if it's possible
         //       you can get the surrounding button's events with ActionEvent.getSource()
         //       and just call doSweep on each of them probably
+        //       can even use Board.getNeighbors()
         // TODO: implement clicking satisfied cell to reveal surroundings
         public void doSweep(ActionEvent event) {
 
@@ -139,7 +140,8 @@ public class GameJGUI extends JFrame {
         }
 
         setTitle(title);
-        setSize(800, 600);
+        setSize(1200, 800);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
