@@ -12,23 +12,32 @@ import javax.swing.*;
 // TODO: menu around main frame
 public class GameJGUI extends JFrame {
 
-    private static final int NO_MODS = 16;
     private Game g;
     private Container pane = getContentPane();
 
     private class MinesweeperButton extends JButton {
 
-        public int x;
-        public int y;
-        public int[] pos;
-        public int index;
+        private int x;
+        private int y;
+        private int index;
 
         public MinesweeperButton(int x, int y, int index) {
             super();
             this.x = x;
             this.y = y;
             this.index = index;
-            this.pos = new int[] {x, y};
+        }
+
+        public int getCoordX() {
+            return this.x;
+        }
+
+        public int getCoordY() {
+            return this.y;
+        }
+
+        public int getIndex() {
+            return this.index;
         }
 
         // TODO: replace this with method that changes the button's appearance and behaviour
@@ -39,79 +48,74 @@ public class GameJGUI extends JFrame {
     }
 
     // button callback
-    private class GridListener implements ActionListener {
+    private class ButtonListener implements MouseListener {
 
-        private static int[] parseCoords(ActionEvent event) {
-            String[] actCmd = event.getActionCommand().split(", ");
-            int x = Integer.parseInt(actCmd[0]);
-            int y = Integer.parseInt(actCmd[1]);
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                MinesweeperButton source = (MinesweeperButton) e.getSource();
+                int result;
+                String newButtonLabel;
+                MinesweeperButton btn;
 
-            return new int[] {x, y};
-        }
+                switch (e.getButton()) {
+                    case MouseEvent.BUTTON1:
+                        result = g.doAction(source.getCoordX(), source.getCoordY(), 1);
+                        if (result < 0) break;
 
+                        for (Component cmp : pane.getComponents()) { // recursively delete buttons over 0 cells
 
-        // TODO: right click to flag
-        public void doLabelAction(ActionEvent event, int action) {
+                            if (cmp instanceof JLabel) continue;
 
-            MinesweeperButton source = (MinesweeperButton) event.getSource();
+                            btn = (MinesweeperButton) cmp;
 
-            int result = g.doAction(source.x, source.y, action);
-            if (result < 0) return;
+                            if (g.getActionBoard().getCell(btn.x, btn.y) == 1) {
+                                btn.sweepButton();
+                            }
+                        }
+                        validate();
+                        break;
 
-            String newButtonLabel = (action == 2 ? "f" : "?");
-            newButtonLabel = (g.getActionBoard().getCell(source.x, source.y) == action ? newButtonLabel : "");
+                    case MouseEvent.BUTTON2:
+                        result = g.doAction(source.getCoordX(), source.getCoordY(), 3);
+                        if (result < 0) break;
 
-            MinesweeperButton btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.index);
-            btn.setText(newButtonLabel);
+                        newButtonLabel = "?";
+                        newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 3 ? newButtonLabel : "");
 
-            validate();
-        }
+                        btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn.setText(newButtonLabel);
 
-        // TODO: maybe refactor this into a recursive function if it's possible
-        //       you can get the surrounding button's events with ActionEvent.getSource()
-        //       and just call doSweep on each of them probably
-        //       can even use Board.getNeighbors()
-        // TODO: implement clicking satisfied cell to reveal surroundings
-        public void doSweep(ActionEvent event) {
+                        validate();
+                        break;
 
-            MinesweeperButton source = (MinesweeperButton) event.getSource();
+                    case MouseEvent.BUTTON3:
+                        result = g.doAction(source.getCoordX(), source.getCoordY(), 2);
+                        if (result < 0) break;
 
-            int result = g.doAction(source.x, source.y, 1);
+                        newButtonLabel = "f";
+                        newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 2 ? newButtonLabel : "");
 
-            if (result < 0) return;
+                        btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn.setText(newButtonLabel);
 
-            for (Component cmp : pane.getComponents()) { // recursively delete buttons over 0 cells
-
-                if (cmp instanceof JLabel) continue;
-
-                var btn = (MinesweeperButton) cmp;
-
-                if (g.getActionBoard().getCell(btn.x, btn.y) == 1) {
-                    btn.sweepButton();
+                        validate();
+                        break;
                 }
-            }
-            validate();
-        }
 
-        @Override
-        public void actionPerformed(ActionEvent event) {
-
-            switch (event.getModifiers() - NO_MODS) {
-                case ActionEvent.SHIFT_MASK:
-                    doLabelAction(event, 2);
-                    break;
-
-                case ActionEvent.CTRL_MASK:
-                    doLabelAction(event, 3);
-                    break;
-
-                default:
-                    doSweep(event);
-                    break;
+                if (g.getGameState() != 0) System.exit(0); // TODO: win/lose screen
             }
 
-            if (g.getGameState() != 0) System.exit(0); // TODO: win/lose screen
-        }
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
+
+            @Override
+            public void mousePressed(MouseEvent e) {}
+
+            @Override
+            public void mouseReleased(MouseEvent e) {}
     }
 
     // TODO: constructor with difficulty instead of specific parameters
@@ -127,16 +131,9 @@ public class GameJGUI extends JFrame {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
 
-                // var btn = new JButton();
                 MinesweeperButton btn = new MinesweeperButton(i, j, index++);
 
-                String posStr = String.format("%d, %d", i, j);
-
-                btn.addActionListener(new GridListener());
-                btn.setName(posStr);
-
-                // this gives us a way to match the event to the button that triggered it
-                btn.setActionCommand(posStr);
+                btn.addMouseListener(new ButtonListener());
 
                 cp.add(btn);
             }
