@@ -16,19 +16,30 @@ public class GameJGUI extends JFrame {
     private Game g;
     private Container pane = getContentPane();
 
-    // button callback
-    private class GridListener implements ActionListener {
+    private class MinesweeperButton extends JButton {
+
+        public int x;
+        public int y;
+        public int[] pos;
+        public int index;
+
+        public MinesweeperButton(int x, int y, int index) {
+            super();
+            this.x = x;
+            this.y = y;
+            this.index = index;
+            this.pos = new int[] {x, y};
+        }
 
         // TODO: replace this with method that changes the button's appearance and behaviour
-        private void removeButton(Component btn) {
-            String[] strCoords = btn.getName().split(", ");
-            int x = Integer.parseInt(strCoords[0]);
-            int y = Integer.parseInt(strCoords[1]);
-            int index = btn.getAccessibleContext().getAccessibleIndexInParent();
-
-            pane.remove(btn);
-            pane.add(new JLabel(g.getAdjacencyBoard().getCell(x, y) + "", JLabel.CENTER), index);
+        public void sweepButton() {
+            pane.remove(this);
+            pane.add(new JLabel(g.getAdjacencyBoard().getCell(this.x, this.y) + "", JLabel.CENTER), index);
         }
+    }
+
+    // button callback
+    private class GridListener implements ActionListener {
 
         private static int[] parseCoords(ActionEvent event) {
             String[] actCmd = event.getActionCommand().split(", ");
@@ -42,20 +53,15 @@ public class GameJGUI extends JFrame {
         // TODO: right click to flag
         public void doLabelAction(ActionEvent event, int action) {
 
-            int[] actCoords = parseCoords(event);
+            MinesweeperButton source = (MinesweeperButton) event.getSource();
 
-            int x = actCoords[0];
-            int y = actCoords[1];
-            JButton source = (JButton) event.getSource();
-            int index = source.getAccessibleContext().getAccessibleIndexInParent();
-
-            int result = g.doAction(x, y, action);
+            int result = g.doAction(source.x, source.y, action);
             if (result < 0) return;
 
             String newButtonLabel = (action == 2 ? "f" : "?");
-            newButtonLabel = (g.getActionBoard().getCell(x, y) == action ? newButtonLabel : "");
+            newButtonLabel = (g.getActionBoard().getCell(source.x, source.y) == action ? newButtonLabel : "");
 
-            JButton btn = (JButton) pane.getAccessibleContext().getAccessibleChild(index);
+            MinesweeperButton btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.index);
             btn.setText(newButtonLabel);
 
             validate();
@@ -68,12 +74,9 @@ public class GameJGUI extends JFrame {
         // TODO: implement clicking satisfied cell to reveal surroundings
         public void doSweep(ActionEvent event) {
 
-            int[] actCoords = parseCoords(event);
+            MinesweeperButton source = (MinesweeperButton) event.getSource();
 
-            int x = actCoords[0];
-            int y = actCoords[1];
-
-            int result = g.doAction(x, y, 1);
+            int result = g.doAction(source.x, source.y, 1);
 
             if (result < 0) return;
 
@@ -81,12 +84,10 @@ public class GameJGUI extends JFrame {
 
                 if (cmp instanceof JLabel) continue;
 
-                String[] cmpName   = cmp.getName().split(", ");
-                int[]    cmpCoords = {Integer.parseInt(cmpName[0]),
-                                      Integer.parseInt(cmpName[1])};
+                var btn = (MinesweeperButton) cmp;
 
-                if (g.getActionBoard().getCell(cmpCoords[0], cmpCoords[1]) == 1) {
-                    removeButton(cmp);
+                if (g.getActionBoard().getCell(btn.x, btn.y) == 1) {
+                    btn.sweepButton();
                 }
             }
             validate();
@@ -122,10 +123,12 @@ public class GameJGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridLayout(height, width));
 
+        int index = 0;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
 
-                var btn = new JButton();
+                // var btn = new JButton();
+                MinesweeperButton btn = new MinesweeperButton(i, j, index++);
 
                 String posStr = String.format("%d, %d", i, j);
 
