@@ -184,6 +184,7 @@ public class Game {
     }
   }
 
+  // TODO: enumeration for action values
   public int doAction(int x, int y, int action) {
     switch (action) {
       case 1:
