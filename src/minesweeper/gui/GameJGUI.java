@@ -10,10 +10,11 @@ import javax.swing.*;
 // TODO: gui field for Game
 // TODO: flag toggle switch
 // TODO: menu around main frame
+// TODO: investigate javax.swing.Action interface for button state
 public class GameJGUI extends JFrame {
 
     private Game g;
-    private Container pane = getContentPane();
+    private Container mainPane;
 
     private class MinesweeperButton extends JButton {
 
@@ -42,8 +43,8 @@ public class GameJGUI extends JFrame {
 
         // TODO: replace this with method that changes the button's appearance and behaviour
         public void sweepButton() {
-            pane.remove(this);
-            pane.add(new JLabel(g.getAdjacencyBoard().getCell(this.x, this.y) + "", JLabel.CENTER), index);
+            mainPane.remove(this);
+            mainPane.add(new JLabel(g.getAdjacencyBoard().getCell(this.x, this.y) + "", JLabel.CENTER), index);
         }
     }
 
@@ -62,7 +63,7 @@ public class GameJGUI extends JFrame {
                         result = g.doAction(source.getCoordX(), source.getCoordY(), 1);
                         if (result < 0) break;
 
-                        for (Component cmp : pane.getComponents()) { // recursively delete buttons over 0 cells
+                        for (Component cmp : mainPane.getComponents()) { // recursively delete buttons over 0 cells
 
                             if (cmp instanceof JLabel) continue;
 
@@ -82,7 +83,7 @@ public class GameJGUI extends JFrame {
                         newButtonLabel = "?";
                         newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 3 ? newButtonLabel : "");
 
-                        btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn = (MinesweeperButton) mainPane.getAccessibleContext().getAccessibleChild(source.getIndex());
                         btn.setText(newButtonLabel);
 
                         validate();
@@ -95,7 +96,7 @@ public class GameJGUI extends JFrame {
                         newButtonLabel = "f";
                         newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 2 ? newButtonLabel : "");
 
-                        btn = (MinesweeperButton) pane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn = (MinesweeperButton) mainPane.getAccessibleContext().getAccessibleChild(source.getIndex());
                         btn.setText(newButtonLabel);
 
                         validate();
@@ -121,11 +122,13 @@ public class GameJGUI extends JFrame {
     // TODO: constructor with difficulty instead of specific parameters
     public GameJGUI(String title, int width, int height, int mines) {
 
-        this.g = new Game(height, width, mines); // honestly I'm not sure why I have to swap widht and height
-        Container cp = getContentPane();
+        Container pane = this.getContentPane();
+        this.g        = new Game(height, width, mines); // HACK: honestly I'm not sure why I have to swap widht and height
+        this.mainPane = new JPanel();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(height, width));
+        setLayout(new FlowLayout());
+        mainPane.setLayout(new GridLayout(height, width));
 
         int index = 0;
         for (int i = 0; i < height; i++) {
@@ -135,12 +138,26 @@ public class GameJGUI extends JFrame {
 
                 btn.addMouseListener(new ButtonListener());
 
-                cp.add(btn);
+                mainPane.add(btn);
             }
         }
 
+        GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
+        GameMenuItem restart = new GameMenuItem("Restart", e -> {
+            this.dispose(); // TODO: only regenerate board instead of killing the whole frame
+            new GameJGUI(title, width, height, mines);
+        });
+
+        JMenuBar menuBar  = new JMenuBar();
+        menuBar.add(new GameMenu("Game", new GameMenuItem[] {
+            exit,
+            restart,
+        }));
+        setJMenuBar(menuBar);
+        pane.add(mainPane);
+
         setTitle(title);
-        setSize(1200, 800);
+        setSize(800, 400);
         setLocationRelativeTo(null);
         setVisible(true);
     }
