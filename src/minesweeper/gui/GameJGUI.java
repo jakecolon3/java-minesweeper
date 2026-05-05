@@ -119,11 +119,7 @@ public class GameJGUI extends JFrame {
             public void mouseReleased(MouseEvent e) {}
     }
 
-    // TODO: constructor with difficulty instead of specific parameters
-    public GameJGUI(String title, int width, int height, int mines) {
-
-        Container pane = this.getContentPane();
-        this.g        = new Game(height, width, mines); // HACK: honestly I'm not sure why I have to swap widht and height
+    private void initMainPane(String title, int width, int height, int mines) {
         this.mainPane = new JPanel();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -141,11 +137,21 @@ public class GameJGUI extends JFrame {
                 mainPane.add(btn);
             }
         }
+    }
+
+    // TODO: constructor with difficulty instead of specific parameters
+    public GameJGUI(String title, int width, int height, int mines) {
+
+        this.g = new Game(height, width, mines); // HACK: honestly I'm not sure why I have to swap width and height
+        initMainPane(title, width, height, mines);
 
         GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
         GameMenuItem restart = new GameMenuItem("Restart", e -> {
-            this.dispose(); // TODO: only regenerate board instead of killing the whole frame
-            new GameJGUI(title, width, height, mines);
+            // don't know if this is the best way to do this
+            remove(mainPane);
+            initMainPane(title, width, height, mines);
+            getContentPane().add(mainPane);
+            validate();
         });
 
         JMenuBar menuBar  = new JMenuBar();
@@ -154,7 +160,7 @@ public class GameJGUI extends JFrame {
             restart,
         }));
         setJMenuBar(menuBar);
-        pane.add(mainPane);
+        getContentPane().add(mainPane);
 
         setTitle(title);
         setSize(800, 400);
