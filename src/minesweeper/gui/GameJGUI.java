@@ -20,13 +20,11 @@ public class GameJGUI extends JFrame {
 
         private int x;
         private int y;
-        private int index;
 
-        public MinesweeperButton(int x, int y, int index) {
+        public MinesweeperButton(int x, int y) {
             super();
             this.x = x;
             this.y = y;
-            this.index = index;
         }
 
         public int getCoordX() {
@@ -37,14 +35,19 @@ public class GameJGUI extends JFrame {
             return this.y;
         }
 
-        public int getIndex() {
-            return this.index;
-        }
-
-        // TODO: replace this with method that changes the button's appearance and behaviour
+        // TODO: add clicking to sweep surrounding cells
         public void sweepButton() {
-            mainPane.remove(this);
-            mainPane.add(new JLabel(g.getAdjacencyBoard().getCell(this.x, this.y) + "", JLabel.CENTER), index);
+            setFocusable(false);
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setModel(new DefaultButtonModel() {
+                public boolean isPressed()  { return false; }
+                public boolean isRollover() { return false; }
+                public void setRollover(boolean b) {}
+            });
+
+            setText(g.getAdjacencyBoard().getCell(this.x, this.y) + "");
+            for (ActionListener a : getActionListeners()) removeActionListener(a);
         }
     }
 
@@ -83,7 +86,7 @@ public class GameJGUI extends JFrame {
                         newButtonLabel = "?";
                         newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 3 ? newButtonLabel : "");
 
-                        btn = (MinesweeperButton) mainPane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn = (MinesweeperButton) source;
                         btn.setText(newButtonLabel);
 
                         validate();
@@ -96,7 +99,7 @@ public class GameJGUI extends JFrame {
                         newButtonLabel = "f";
                         newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 2 ? newButtonLabel : "");
 
-                        btn = (MinesweeperButton) mainPane.getAccessibleContext().getAccessibleChild(source.getIndex());
+                        btn = (MinesweeperButton) source;
                         btn.setText(newButtonLabel);
 
                         validate();
@@ -125,11 +128,10 @@ public class GameJGUI extends JFrame {
         mainPane.setLayout(new GridLayout(height, width));
         mainPane.setPreferredSize(new Dimension(width * 50, height * 50));
 
-        int index = 0;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
 
-                MinesweeperButton btn = new MinesweeperButton(i, j, index++);
+                MinesweeperButton btn = new MinesweeperButton(i, j);
 
                 btn.addMouseListener(new ButtonListener());
 
