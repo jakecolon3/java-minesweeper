@@ -9,6 +9,9 @@ srcs = $(shell find ./$(src) -name '*.java')
 # MAKEFLAGS := --jobs
 # TODO: pattern rules
 
+gridtest : $(build)/gui/GameJGUI.class
+	$(cp) java minesweeper.gui.GameJGUI 10 10
+
 $(build)/Main.class : $(src)/Main.java $(build)/game/Game.class $(build)/gui/GameJGUI.class
 	$(javac) $(src)/Main.java
 
@@ -20,15 +23,6 @@ run :
 
 clean :
 	rm -rf ./build
-
-winexample : test/AWTExample.class
-	$(cp) java AWTExample
-
-gridtest : $(build)/gui/GameJGUI.class
-	$(cp) java minesweeper.gui.GameJGUI 10 10
-
-oldgridtest : $(build)/gui/GameGUI.class
-	$(cp) java minesweeper.gui.GameGUI 10 10
 
 $(build)/game/Game.class : $(src)/game/Game.java $(build)/game/Board.class
 	$(javac) $(src)/game/Game.java

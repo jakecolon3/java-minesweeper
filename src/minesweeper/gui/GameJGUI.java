@@ -119,12 +119,11 @@ public class GameJGUI extends JFrame {
             public void mouseReleased(MouseEvent e) {}
     }
 
-    private void initMainPane(String title, int width, int height, int mines) {
-        this.mainPane = new JPanel();
+    private JPanel initMainPane(String title, int width, int height, int mines) {
+        var mainPane = new JPanel();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
         mainPane.setLayout(new GridLayout(height, width));
+        mainPane.setPreferredSize(new Dimension(width * 50, height * 50));
 
         int index = 0;
         for (int i = 0; i < height; i++) {
@@ -137,19 +136,23 @@ public class GameJGUI extends JFrame {
                 mainPane.add(btn);
             }
         }
+        return mainPane;
     }
 
     // TODO: constructor with difficulty instead of specific parameters
     public GameJGUI(String title, int width, int height, int mines) {
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         this.g = new Game(height, width, mines); // HACK: honestly I'm not sure why I have to swap width and height
-        initMainPane(title, width, height, mines);
+        this.mainPane = initMainPane(title, width, height, mines);
 
         GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
         GameMenuItem restart = new GameMenuItem("Restart", e -> {
             // don't know if this is the best way to do this
             remove(mainPane);
-            initMainPane(title, width, height, mines);
+            this.mainPane = initMainPane(title, width, height, mines);
+            this.g = new Game(height, width, mines);
             getContentPane().add(mainPane);
             validate();
         });
@@ -163,7 +166,7 @@ public class GameJGUI extends JFrame {
         getContentPane().add(mainPane);
 
         setTitle(title);
-        setSize(800, 400);
+        setSize(1500, 800);
         setLocationRelativeTo(null);
         setVisible(true);
     }
