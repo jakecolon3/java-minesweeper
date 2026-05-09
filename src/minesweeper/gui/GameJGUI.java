@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-
 // TODO: gui field for Game
 // TODO: flag toggle switch
 // TODO: menu around main frame
@@ -20,6 +19,7 @@ public class GameJGUI extends JFrame {
 
         private int x;
         private int y;
+        private boolean swept = false;
 
         public MinesweeperButton(int x, int y) {
             super();
@@ -35,8 +35,8 @@ public class GameJGUI extends JFrame {
             return this.y;
         }
 
-        // TODO: add clicking to sweep surrounding cells
         public void sweepButton() {
+            swept = true;
             setFocusable(false);
             setFocusPainted(false);
             setBorderPainted(false);
@@ -48,9 +48,17 @@ public class GameJGUI extends JFrame {
 
             setText(g.getAdjacencyBoard().getCell(this.x, this.y) + "");
             for (MouseListener a : getMouseListeners()) {
-                System.out.println("removing: " + a);
                 removeMouseListener(a);
             }
+
+            addMouseListener(new SweptButtonListener());
+        }
+
+        // TODO: only run this if the cell is satisfied
+        public void click() {
+            if (swept) return;
+            MouseEvent e = new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 0, 0, getX(), getY(), 1, false, 1);
+            processMouseEvent(e);
         }
     }
 
@@ -63,8 +71,6 @@ public class GameJGUI extends JFrame {
                 int result;
                 String newButtonLabel;
                 MinesweeperButton btn;
-                System.out.println(e.getButton());
-                System.out.println(((MinesweeperButton)e.getSource()).getListeners(ButtonListener.class));
 
                 switch (e.getButton()) {
                     case MouseEvent.BUTTON1:
@@ -101,7 +107,7 @@ public class GameJGUI extends JFrame {
                         result = g.doAction(source.getCoordX(), source.getCoordY(), 2);
                         if (result < 0) break;
 
-                        newButtonLabel = "f";
+                        newButtonLabel = "P";
                         newButtonLabel = (g.getActionBoard().getCell(source.getCoordX(), source.getCoordY()) == 2 ? newButtonLabel : "");
 
                         btn = (MinesweeperButton) source;
@@ -120,6 +126,25 @@ public class GameJGUI extends JFrame {
             public void mouseReleased(MouseEvent e) { }
     }
 
+    private class SweptButtonListener extends ButtonListener {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int sourceX = ((MinesweeperButton)e.getSource()).x;
+            int sourceY = ((MinesweeperButton)e.getSource()).y;
+
+            for (int[] coord : Board.getNeighbors(sourceX, sourceY)) {
+                int btnX = coord[0];
+                int btnY = coord[1];
+                if (btnX < 0 || btnY < 0 || btnX >= g.getWidth() || btnY >= g.getHeight()) continue;
+                Component cmp = getComponentByCoordinate(btnX, btnY);
+                if (!(cmp instanceof MinesweeperButton)) continue;
+                MinesweeperButton btn = (MinesweeperButton) cmp;
+                btn.click();
+            }
+        }
+    }
+
     private JPanel initMainPane(String title, int width, int height, int mines) {
         var mainPane = new JPanel();
 
@@ -129,7 +154,7 @@ public class GameJGUI extends JFrame {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
 
-                MinesweeperButton btn = new MinesweeperButton(i, j);
+                MinesweeperButton btn = new MinesweeperButton(j, i);
 
                 btn.addMouseListener(new ButtonListener());
 
@@ -144,7 +169,7 @@ public class GameJGUI extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.g = new Game(height, width, mines); // HACK: honestly I'm not sure why I have to swap width and height
+        this.g = new Game(width, height, mines);
         this.mainPane = initMainPane(title, width, height, mines);
 
         GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
@@ -152,7 +177,7 @@ public class GameJGUI extends JFrame {
             // don't know if this is the best way to do this
             remove(mainPane);
             this.mainPane = initMainPane(title, width, height, mines);
-            this.g = new Game(height, width, mines);
+            this.g = new Game(width, height, mines);
             getContentPane().add(mainPane);
             validate();
         });
@@ -169,6 +194,10 @@ public class GameJGUI extends JFrame {
         setSize(1500, 800);
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public Component getComponentByCoordinate(int x, int y) {
+        return (Component) mainPane.getAccessibleContext().getAccessibleChild(y * g.getWidth() + x);
     }
 
     public static void main(String[] args) {

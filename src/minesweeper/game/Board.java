@@ -81,10 +81,10 @@ public class Board {
     }
   }
 
-  public int[][] getNeighbors(int x, int y) {
+  public static int[][] getNeighbors(int x, int y) {
     int[][] neighbors = {
         { x - 1, y + 1 }, { x, y + 1 }, { x + 1, y + 1 },
-        { x - 1, y }, { x + 1, y },
+        { x - 1, y     },               { x + 1, y     },
         { x - 1, y - 1 }, { x, y - 1 }, { x + 1, y - 1 }
     };
 

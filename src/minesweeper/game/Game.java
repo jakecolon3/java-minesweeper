@@ -112,7 +112,7 @@ public class Game {
 
     } else if (adjCell == 0) {
 
-      int[][] neighbors = this.adjacencyBoard.getNeighbors(x, y);
+      int[][] neighbors = Board.getNeighbors(x, y);
 
       for (int[] coords : neighbors) {
         if (
