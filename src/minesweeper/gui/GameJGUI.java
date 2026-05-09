@@ -47,7 +47,10 @@ public class GameJGUI extends JFrame {
             });
 
             setText(g.getAdjacencyBoard().getCell(this.x, this.y) + "");
-            for (ActionListener a : getActionListeners()) removeActionListener(a);
+            for (MouseListener a : getMouseListeners()) {
+                System.out.println("removing: " + a);
+                removeMouseListener(a);
+            }
         }
     }
 
@@ -60,6 +63,8 @@ public class GameJGUI extends JFrame {
                 int result;
                 String newButtonLabel;
                 MinesweeperButton btn;
+                System.out.println(e.getButton());
+                System.out.println(((MinesweeperButton)e.getSource()).getListeners(ButtonListener.class));
 
                 switch (e.getButton()) {
                     case MouseEvent.BUTTON1:
@@ -109,17 +114,10 @@ public class GameJGUI extends JFrame {
                 if (g.getGameState() != 0) System.exit(0); // TODO: win/lose screen
             }
 
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {}
-
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e)  { }
+            public void mouseExited(MouseEvent e)   { }
+            public void mousePressed(MouseEvent e)  { }
+            public void mouseReleased(MouseEvent e) { }
     }
 
     private JPanel initMainPane(String title, int width, int height, int mines) {
