@@ -42,7 +42,7 @@ public class GameJGUI extends JFrame {
 
             exitButton = new JButton("exit");
             restartButton = new JButton("restart");
-            exitButton.addActionListener(e -> System.exit(1));
+            exitButton.addActionListener(e -> System.exit(0));
             restartButton.addActionListener(e -> {
                 new RestartFunction().actionPerformed(e);
                 dispose();
@@ -88,7 +88,23 @@ public class GameJGUI extends JFrame {
                 public void setRollover(boolean b) {}
             });
 
-            setText(g.getAdjacencyBoard().getCell(this.x, this.y) + "");
+            int cellText = g.getAdjacencyBoard().getCell(this.x, this.y);
+            JLabel bLabel = new JLabel(cellText == 0 ? "" : cellText + "", JLabel.CENTER);
+            Color c;
+
+            switch (cellText) {
+                default -> c = Color.BLACK;
+                case 1  -> c = Color.BLUE;
+                case 2  -> c = Color.GREEN;
+                case 3  -> c = Color.RED;
+                case 4  -> c = Color.BLUE.darker();
+                case 5  -> c = Color.RED.darker();
+                case 6  -> c = Color.CYAN;
+                case 7  -> c = Color.MAGENTA.darker();
+                case 8  -> c = Color.LIGHT_GRAY;
+            }
+            bLabel.setForeground(c);
+            add(bLabel);
             for (MouseListener a : getMouseListeners()) {
                 removeMouseListener(a);
             }
@@ -172,17 +188,22 @@ public class GameJGUI extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (e.getButton() != MouseEvent.BUTTON1) return;
             int sourceX = ((MinesweeperButton)e.getSource()).x;
             int sourceY = ((MinesweeperButton)e.getSource()).y;
 
-            for (int[] coord : Board.getNeighbors(sourceX, sourceY)) {
-                int btnX = coord[0];
-                int btnY = coord[1];
-                if (btnX < 0 || btnY < 0 || btnX >= g.getWidth() || btnY >= g.getHeight()) continue;
-                Component cmp = getComponentByCoordinate(btnX, btnY);
-                if (!(cmp instanceof MinesweeperButton)) continue;
-                MinesweeperButton btn = (MinesweeperButton) cmp;
-                btn.click();
+            if (Board.countNeighbors(g.getActionBoard(), 2, sourceX, sourceY)
+             >= g.getAdjacencyBoard().getCell(sourceX, sourceY)) {
+                for (int[] coord : Board.getNeighbors(sourceX, sourceY)) {
+                    int btnX = coord[0];
+                    int btnY = coord[1];
+                    if (btnX < 0 || btnY < 0 || btnX >= g.getWidth() || btnY >= g.getHeight()) continue;
+                    Component cmp = getComponentByCoordinate(btnX, btnY);
+                    if (!(cmp instanceof MinesweeperButton)) continue;
+                    MinesweeperButton btn = (MinesweeperButton) cmp;
+                    btn.click();
+                }
+            } else {
             }
         }
     }
@@ -202,6 +223,7 @@ public class GameJGUI extends JFrame {
 
                 MinesweeperButton btn = new MinesweeperButton(j, i);
 
+                btn.setPreferredSize(new Dimension(40, 40));
                 btn.addMouseListener(new ButtonListener());
 
                 mainPane.add(btn);
@@ -236,6 +258,7 @@ public class GameJGUI extends JFrame {
         setSize(1500, 800);
         setLocationRelativeTo(null);
         setVisible(true);
+        pack();
     }
 
     public GameJGUI(String title, int width, int height, int mines) {

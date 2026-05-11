@@ -91,22 +91,23 @@ public class Board {
     return neighbors;
   }
 
-  private int countNeighbors(int x, int y) {
+  public static int countNeighbors(Board b, int toCount, int x, int y) {
     int count = 0;
 
-    for (int[] coordinate : getNeighbors(x, y)) {
+    for (int[] coordinate : Board.getNeighbors(x, y)) {
       int i = coordinate[0];
       int j = coordinate[1];
 
-      if (i < 0 || j < 0 || (i >= this.boardWidth) || (j >= this.boardHeight)) {
+      if (i < 0 || j < 0 || (i >= b.getWidth()) || (j >= b.getHeight())) {
         continue;
-      } else if (this.getCell(i, j) == 1) {
+      } else if (b.getCell(i, j) == toCount) {
         count++;
       }
     }
 
     return count;
   }
+
 
   public void populateAdjacencyBoard(Board mainBoard) {
     int count;
@@ -117,7 +118,7 @@ public class Board {
         if (mainBoard.getMatrix()[j][i] == 1) {
           count = 9;
         } else {
-          count = mainBoard.countNeighbors(i, j);
+          count = countNeighbors(mainBoard, 1, i, j);
         }
 
         this.setCell(i, j, count);
