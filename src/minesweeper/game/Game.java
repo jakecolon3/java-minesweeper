@@ -106,7 +106,6 @@ public class Game {
 
     if (mainCell == 1) {
       this.gameState = -1;
-      System.out.println("hit mine");
 
       return -1;
 

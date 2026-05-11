@@ -14,6 +14,48 @@ public class GameJGUI extends JFrame {
 
     private Game g;
     private Container mainPane;
+    private String windowTitle;
+    private int boardWidth;
+    private int boardHeight;
+    private int mines;
+
+    private class GamePopup extends JDialog {
+
+        private Container pane = getContentPane();
+        private JPanel buttonBox;
+        private JButton exitButton;
+        private JButton restartButton;
+        private static boolean exists;
+
+        public GamePopup(Frame owner, int outcome) {
+            super(owner);
+            if (exists) return;
+            GamePopup.exists = true;
+            add(new Label(String.format("You %s!", outcome > 0 ? "won" : "lost"), Label.CENTER));
+            setSize(new Dimension(150, 100));
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+
+            buttonBox = new JPanel();
+            buttonBox.setLayout(new BoxLayout(buttonBox, BoxLayout.X_AXIS));
+
+            exitButton = new JButton("exit");
+            restartButton = new JButton("restart");
+            exitButton.addActionListener(e -> System.exit(1));
+            restartButton.addActionListener(e -> {
+                new RestartFunction().actionPerformed(e);
+                dispose();
+                GamePopup.exists = false;
+            });
+
+            buttonBox.add(exitButton);
+            buttonBox.add(restartButton);
+            add(buttonBox);
+
+            setVisible(true);
+        }
+    }
 
     private class MinesweeperButton extends JButton {
 
@@ -77,7 +119,7 @@ public class GameJGUI extends JFrame {
                         result = g.doAction(source.getCoordX(), source.getCoordY(), 1);
                         if (result < 0) break;
 
-                        for (Component cmp : mainPane.getComponents()) { // recursively delete buttons over 0 cells
+                        for (Component cmp : mainPane.getComponents()) { // "recursively" delete buttons over 0 cells
 
                             if (cmp instanceof JLabel) continue;
 
@@ -117,7 +159,7 @@ public class GameJGUI extends JFrame {
                         break;
                 }
 
-                if (g.getGameState() != 0) System.exit(0); // TODO: win/lose screen
+                if (g.getGameState() != 0) winLosePopup();
             }
 
             public void mouseEntered(MouseEvent e)  { }
@@ -145,6 +187,10 @@ public class GameJGUI extends JFrame {
         }
     }
 
+    private void winLosePopup() {
+        new GamePopup(this, g.getGameState());
+    }
+
     private JPanel initMainPane(String title, int width, int height, int mines) {
         var mainPane = new JPanel();
 
@@ -164,8 +210,24 @@ public class GameJGUI extends JFrame {
         return mainPane;
     }
 
+    private class RestartFunction implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            remove(mainPane);
+            mainPane = initMainPane(windowTitle, boardWidth, boardHeight, mines);
+            g = new Game(boardWidth, boardHeight, mines);
+            getContentPane().add(mainPane);
+            validate();
+        }
+    }
+
     // TODO: constructor with difficulty instead of specific parameters
     public GameJGUI(String title, int width, int height, int mines) {
+
+        this.windowTitle = title;
+        this.boardHeight = height;
+        this.boardWidth  = width;
+        this.mines       = mines;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -173,14 +235,7 @@ public class GameJGUI extends JFrame {
         this.mainPane = initMainPane(title, width, height, mines);
 
         GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
-        GameMenuItem restart = new GameMenuItem("Restart", e -> {
-            // don't know if this is the best way to do this
-            remove(mainPane);
-            this.mainPane = initMainPane(title, width, height, mines);
-            this.g = new Game(width, height, mines);
-            getContentPane().add(mainPane);
-            validate();
-        });
+        GameMenuItem restart = new GameMenuItem("Restart", new RestartFunction());
 
         JMenuBar menuBar  = new JMenuBar();
         menuBar.add(new GameMenu("Game", new GameMenuItem[] {
