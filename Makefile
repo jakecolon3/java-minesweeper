@@ -19,7 +19,7 @@ all :
 	$(javac) $(srcs)
 
 run :
-	$(cp) java minesweeper.Main 1
+	$(cp) java minesweeper.Main 1 1
 
 clean :
 	rm -rf ./build

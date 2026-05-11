@@ -210,29 +210,16 @@ public class GameJGUI extends JFrame {
         return mainPane;
     }
 
-    private class RestartFunction implements ActionListener {
-
-        public void actionPerformed(ActionEvent e) {
-            remove(mainPane);
-            mainPane = initMainPane(windowTitle, boardWidth, boardHeight, mines);
-            g = new Game(boardWidth, boardHeight, mines);
-            getContentPane().add(mainPane);
-            validate();
-        }
-    }
-
-    // TODO: constructor with difficulty instead of specific parameters
-    public GameJGUI(String title, int width, int height, int mines) {
-
+    public GameJGUI(String title, Game game) {
+        this.g           = game;
         this.windowTitle = title;
-        this.boardHeight = height;
-        this.boardWidth  = width;
-        this.mines       = mines;
+        this.boardWidth  = game.getWidth();
+        this.boardHeight = game.getHeight();
+        this.mines       = game.getMines();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.g = new Game(width, height, mines);
-        this.mainPane = initMainPane(title, width, height, mines);
+        this.mainPane = initMainPane(windowTitle, boardWidth, boardHeight, mines);
 
         GameMenuItem exit = new GameMenuItem("Exit", e -> System.exit(0));
         GameMenuItem restart = new GameMenuItem("Restart", new RestartFunction());
@@ -251,8 +238,23 @@ public class GameJGUI extends JFrame {
         setVisible(true);
     }
 
+    public GameJGUI(String title, int width, int height, int mines) {
+        this(title, new Game(width, height, mines));
+    }
+
     public Component getComponentByCoordinate(int x, int y) {
         return (Component) mainPane.getAccessibleContext().getAccessibleChild(y * g.getWidth() + x);
+    }
+
+    private class RestartFunction implements ActionListener {
+
+        public void actionPerformed(ActionEvent e) {
+            remove(mainPane);
+            mainPane = initMainPane(windowTitle, boardWidth, boardHeight, mines);
+            g = new Game(boardWidth, boardHeight, mines);
+            getContentPane().add(mainPane);
+            validate();
+        }
     }
 
     public static void main(String[] args) {
