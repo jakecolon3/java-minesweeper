@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import minesweeper.game.*;
 
+// TODO: reveal board on win/lose
 // TODO: scale gui based on screen resolution
 // TODO: scroll bars
 // TODO: gui field for Game
@@ -45,7 +46,7 @@ public class GameJGUI extends JFrame {
         setJMenuBar(menuBar);
         scrollPane = new JScrollPane(mainPane);
         scrollPane.setPreferredSize(new Dimension(1920, 1080));
-        getContentPane().add(scrollPane);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         setTitle(title);
         setSize(1500, 800);

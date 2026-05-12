@@ -8,28 +8,33 @@ import minesweeper.game.*;
 
 public class GameMainPane extends JPanel implements Scrollable {
 
+    public static final int SCROLLABLE_THRESHOLD = 1080;
+
     private Game g;
     private int boardHeight;
     private int boardWidth;
+    private GridBagConstraints c;
+    private boolean tracksViewport;
 
     public GameMainPane(Game game) {
         super();
         g = game;
         boardHeight = game.getHeight();
         boardWidth = game.getWidth();
+        c = new GridBagConstraints();
+        tracksViewport = Toolkit.getDefaultToolkit().getScreenSize().getHeight() > SCROLLABLE_THRESHOLD;
 
-        setLayout(new GridLayout(boardHeight, boardWidth));
+        setLayout(new GridBagLayout());
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1;
+        c.weighty = 1;
+
         setPreferredSize(new Dimension(boardWidth * 50, boardHeight * 50));
 
         for (int i = 0; i < boardHeight; i++) {
             for (int j = 0; j < boardWidth; j++) {
-
                 MinesweeperButton btn = new MinesweeperButton(j, i);
-
-                btn.setPreferredSize(new Dimension(40, 40));
-                btn.addMouseListener(new ButtonListener());
-
-                add(btn);
+                add(btn, c);
             }
         }
     }
@@ -38,12 +43,16 @@ public class GameMainPane extends JPanel implements Scrollable {
 
         private int x;
         private int y;
-        private boolean swept = false;
+        private boolean swept;
 
         public MinesweeperButton(int x, int y) {
             super();
-            this.x = x;
-            this.y = y;
+            this.x  = x; this.y  = y;
+            c.gridx = x; c.gridy = y;
+            this.swept = false;
+            setMinimumSize(new Dimension(60, 60));
+            setPreferredSize(new Dimension(60, 60));
+            addMouseListener(new ButtonListener());
         }
 
         public int getCoordX() {
@@ -89,7 +98,6 @@ public class GameMainPane extends JPanel implements Scrollable {
             addMouseListener(new SweptButtonListener());
         }
 
-        // TODO: only run this if the cell is satisfied
         public void click() {
             if (swept) return;
             MouseEvent e = new MouseEvent(this, MouseEvent.MOUSE_CLICKED, 0, 0, getX(), getY(), 1, false, 1);
@@ -156,9 +164,9 @@ public class GameMainPane extends JPanel implements Scrollable {
                 if (g.getGameState() != 0) ((GameJGUI) SwingUtilities.getWindowAncestor(GameMainPane.this)).winLosePopup();
             }
 
-            public void mouseEntered(MouseEvent e)  { }
-            public void mouseExited(MouseEvent e)   { }
-            public void mousePressed(MouseEvent e)  { }
+            public void mouseExited(MouseEvent   e) { }
+            public void mouseEntered(MouseEvent  e) { }
+            public void mousePressed(MouseEvent  e) { }
             public void mouseReleased(MouseEvent e) { }
     }
 
@@ -202,12 +210,12 @@ public class GameMainPane extends JPanel implements Scrollable {
 
     @Override
     public boolean getScrollableTracksViewportHeight() {
-        return false;
+        return tracksViewport;
     }
 
     @Override
     public boolean getScrollableTracksViewportWidth() {
-        return false;
+        return tracksViewport;
     }
 
     @Override
