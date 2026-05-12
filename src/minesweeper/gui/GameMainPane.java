@@ -153,7 +153,7 @@ public class GameMainPane extends JPanel implements Scrollable {
                 }
 
                 // HACK: sloppy
-                if (g.getGameState() != 0) ((GameJGUI) getParent()).winLosePopup();
+                if (g.getGameState() != 0) ((GameJGUI) SwingUtilities.getWindowAncestor(GameMainPane.this)).winLosePopup();
             }
 
             public void mouseEntered(MouseEvent e)  { }
@@ -192,26 +192,26 @@ public class GameMainPane extends JPanel implements Scrollable {
 
     @Override
     public Dimension getPreferredScrollableViewportSize() {
-        throw new UnsupportedOperationException("Unimplemented method 'getPreferredScrollableViewportSize'");
+        return new Dimension(800, 500);
     }
 
     @Override
     public int getScrollableBlockIncrement(Rectangle arg0, int arg1, int arg2) {
-        throw new UnsupportedOperationException("Unimplemented method 'getScrollableBlockIncrement'");
+        return 10;
     }
 
     @Override
     public boolean getScrollableTracksViewportHeight() {
-        throw new UnsupportedOperationException("Unimplemented method 'getScrollableTracksViewportHeight'");
+        return false;
     }
 
     @Override
     public boolean getScrollableTracksViewportWidth() {
-        throw new UnsupportedOperationException("Unimplemented method 'getScrollableTracksViewportWidth'");
+        return false;
     }
 
     @Override
     public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
-        throw new UnsupportedOperationException("Unimplemented method 'getScrollableUnitIncrement'");
+        return 10;
     }
 }

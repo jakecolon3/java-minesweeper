@@ -44,14 +44,14 @@ public class GameJGUI extends JFrame {
         }));
         setJMenuBar(menuBar);
         scrollPane = new JScrollPane(mainPane);
-        scrollPane.add(mainPane);
+        scrollPane.setPreferredSize(new Dimension(1920, 1080));
         getContentPane().add(scrollPane);
 
         setTitle(title);
         setSize(1500, 800);
+        pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        pack();
     }
 
     private class GamePopup extends JDialog {
@@ -103,10 +103,9 @@ public class GameJGUI extends JFrame {
     private class RestartFunction implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
-            remove(mainPane);
             mainPane = new GameMainPane(g);
             g = new Game(boardWidth, boardHeight, mines);
-            getContentPane().add(mainPane);
+            scrollPane.setViewportView(mainPane);
             validate();
         }
     }
