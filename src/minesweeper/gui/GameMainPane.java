@@ -14,6 +14,7 @@ public class GameMainPane extends JPanel implements Scrollable {
 
     public GameMainPane(Game game) {
         super();
+        g = game;
         boardHeight = game.getHeight();
         boardWidth = game.getWidth();
 
