@@ -104,8 +104,8 @@ public class GameJGUI extends JFrame {
     private class RestartFunction implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
-            mainPane = new GameMainPane(g);
             g = new Game(boardWidth, boardHeight, mines);
+            mainPane = new GameMainPane(g);
             scrollPane.setViewportView(mainPane);
             validate();
         }
