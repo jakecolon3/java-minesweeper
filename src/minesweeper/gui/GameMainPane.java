@@ -79,7 +79,6 @@ public class GameMainPane extends JPanel implements Scrollable {
             JLabel bLabel = new JLabel(cellText == 0 ? "" : cellText + "", JLabel.CENTER);
             Color c;
             switch (cellText) {
-                default -> c = Color.BLACK;
                 case 1  -> c = Color.BLUE;
                 case 2  -> c = Color.GREEN;
                 case 3  -> c = Color.RED;
@@ -88,9 +87,11 @@ public class GameMainPane extends JPanel implements Scrollable {
                 case 6  -> c = Color.CYAN;
                 case 7  -> c = Color.MAGENTA.darker();
                 case 8  -> c = Color.LIGHT_GRAY;
+                default -> c = Color.BLACK;
             }
             bLabel.setForeground(c);
-            add(bLabel);
+            setLayout(new BorderLayout());
+            add(bLabel, BorderLayout.CENTER);
             for (MouseListener a : getMouseListeners()) {
                 removeMouseListener(a);
             }
@@ -120,12 +121,8 @@ public class GameMainPane extends JPanel implements Scrollable {
                         result = g.doAction(source.getCoordX(), source.getCoordY(), 1);
                         if (result < 0) break;
 
-                        for (Component cmp : getComponents()) { // "recursively" delete buttons over 0 cells
-
-                            if (cmp instanceof JLabel) continue;
-
+                        for (Component cmp : getComponents()) { // change buttons over 0 cells
                             btn = (MinesweeperButton) cmp;
-
                             if (g.getActionBoard().getCell(btn.x, btn.y) == 1) {
                                 btn.sweepButton();
                             }
@@ -160,8 +157,18 @@ public class GameMainPane extends JPanel implements Scrollable {
                         break;
                 }
 
-                // HACK: sloppy
-                if (g.getGameState() != 0) ((GameJGUI) SwingUtilities.getWindowAncestor(GameMainPane.this)).winLosePopup();
+                switch (g.getGameState()) {
+                    case  0: break;
+                    case -1:
+                        for (Component cmp : getComponents()) {
+                            btn = (MinesweeperButton) cmp;
+                            btn.sweepButton();
+                        }
+                        validate();
+                    default:
+                        // HACK: sloppy
+                        ((GameJGUI) SwingUtilities.getWindowAncestor(GameMainPane.this)).winLosePopup();
+                }
             }
 
             public void mouseExited(MouseEvent   e) { }
